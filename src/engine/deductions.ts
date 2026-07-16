@@ -115,13 +115,22 @@ export interface CellMark {
 }
 export type MarkGrid = Record<Category, Record<string, CellMark>>;
 
-export type SuggestionReason =
-  | 'suspicion-unique'
-  | 'column-forced'
-  | 'column-full'
-  | 'trust-forced'
-  | 'ruled-out';
-export type WarningReason = 'overfull' | 'impossible';
+/**
+ * Runtime lists so callers (and the i18n coverage test) can enumerate every
+ * reason; the string-union types are derived from them and stay in lockstep.
+ * Each value maps to a `suggest.why.<reason>` phrase key.
+ */
+export const SUGGESTION_REASONS = [
+  'suspicion-unique',
+  'column-forced',
+  'column-full',
+  'trust-forced',
+  'ruled-out',
+] as const;
+export type SuggestionReason = (typeof SUGGESTION_REASONS)[number];
+
+export const WARNING_REASONS = ['overfull', 'impossible'] as const;
+export type WarningReason = (typeof WARNING_REASONS)[number];
 
 export interface Suggestion {
   /** Stable across renders while the same move is offered. */
