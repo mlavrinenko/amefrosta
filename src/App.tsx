@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useGame } from './state/useGame';
 import { cipherConsistency } from './engine';
+import { scoredSignals } from './state/signals';
 import { makeI18n, I18nProvider } from './i18n';
 import { Tabs, type TabId } from './ui/Tabs';
 import { HeaderCipher } from './ui/HeaderCipher';
@@ -49,16 +50,15 @@ export function App() {
 
   const side = game.state.side;
 
-  // Scientist-only: how many alien signals the current cipher guess reproduces.
+  // Scientist-only: how many scored words the current cipher guess reproduces
+  // (every scored word counts — the Scientist's own included, see scoredSignals).
   const tabBadges = useMemo(() => {
     const s = game.state;
     if (s.side !== 'scientist' || !s.cipher) return undefined;
     const hasLetters = [...s.cipher.trust, ...s.cipher.amplify, ...s.cipher.suspicion].some(
       (l) => l.length > 0,
     );
-    const signals = s.transmissions
-      .filter((tx) => tx.from === 'alien' && tx.value !== null)
-      .map((tx) => ({ word: tx.word, value: tx.value as number }));
+    const signals = scoredSignals(s.transmissions);
     if (!hasLetters || signals.length === 0) return undefined;
     const cons = cipherConsistency(s.cipher, signals);
     return { tx: `${cons.matches}/${cons.total}` };

@@ -2,6 +2,7 @@ import type { Cipher } from '../engine/types';
 import type { PackCode } from '../packs';
 
 export type Side = 'alien' | 'scientist';
+export const SIDES: Side[] = ['alien', 'scientist'];
 export type Category = 'trust' | 'amplify' | 'suspicion';
 export const CATEGORIES: Category[] = ['trust', 'amplify', 'suspicion'];
 

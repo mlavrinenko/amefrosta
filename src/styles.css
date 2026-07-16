@@ -502,29 +502,23 @@ textarea.notes.tall {
 }
 
 .mrow-junk {
+  margin-left: auto;
   color: var(--muted);
   opacity: 0.8;
 }
 
-.mrow-chip {
-  font-size: 10px;
+/* Letter frequency across scored words: distinct words · total occurrences. */
+.mrow-freq {
+  margin-left: auto;
+  font-size: 11px;
   font-weight: 700;
-  padding: 1px 5px;
-  border-radius: 999px;
+  font-variant-numeric: tabular-nums;
+  color: var(--signal);
+}
+
+.mrow-freq-total {
   color: var(--muted);
-  background: #ffffff12;
-}
-
-.chip-trust {
-  color: var(--common);
-}
-
-.chip-amplify {
-  color: var(--accent);
-}
-
-.chip-suspicion {
-  color: var(--danger);
+  font-weight: 600;
 }
 
 .matrix td {
@@ -774,6 +768,31 @@ textarea.notes.tall {
   overflow-wrap: anywhere;
 }
 
+/* Cipher letters tinted in place, so the current cipher is legible in words. */
+.tx-ch {
+  font-weight: 800;
+}
+
+.tx-ch-trust {
+  color: var(--common);
+}
+
+.tx-ch-amplify {
+  color: var(--accent);
+}
+
+.tx-ch-suspicion {
+  color: var(--danger);
+}
+
+.tx-value-input {
+  width: 64px;
+  padding: 4px 6px;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+}
+
 .tx-value {
   font-variant-numeric: tabular-nums;
   font-weight: 700;
@@ -925,7 +944,7 @@ textarea.notes.tall {
 .sheet-head {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 8px;
   padding: 12px 16px;
   border-bottom: 1px solid #ffffff14;
   position: sticky;
@@ -933,9 +952,25 @@ textarea.notes.tall {
 }
 
 .sheet-title {
-  margin: 0;
+  margin: 0 auto 0 0;
   font-size: 17px;
   font-weight: 700;
+}
+
+/* Header dice: low-key "Create random", so it never reads as a confirm. */
+.sheet-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  font-size: 13px;
+  color: var(--muted);
+  background: none;
+  border: 1px solid #ffffff1f;
+}
+
+.sheet-action:hover {
+  color: var(--text);
 }
 
 .sheet-body {

@@ -1,8 +1,8 @@
-import { lazy, Suspense, useMemo, useState } from 'react';
+import { lazy, Suspense, useMemo, useRef, useState } from 'react';
 import { useI18n } from '../../i18n';
 import { isCipherComplete, parseImport, scoreWord } from '../../engine';
 import type { Cipher } from '../../engine/types';
-import type { Side, Transmission } from '../../state/state';
+import { CATEGORIES, type Category, type Side, type Transmission } from '../../state/state';
 import { newId } from '../../state/id';
 import type { GameApi } from '../../state/useGame';
 import { QrModal } from '../QrModal';
@@ -21,6 +21,41 @@ function ValueIcon({ value }: { value: number | null }) {
   return <Icon name={value > 0 ? 'signal' : 'suspicion'} size={13} />;
 }
 
+/** letter -> its role in the active cipher/hypothesis, for word highlighting. */
+function roleMap(cipher: Cipher | null): Map<string, Category> {
+  const m = new Map<string, Category>();
+  if (!cipher) return m;
+  for (const cat of CATEGORIES) {
+    for (const l of cipher[cat]) {
+      const L = (l ?? '').toUpperCase();
+      if (L) m.set(L, cat);
+    }
+  }
+  return m;
+}
+
+/** A word with each cipher letter tinted in its role colour. */
+function CipherWord({ word, roles }: { word: string; roles: Map<string, Category> }) {
+  return (
+    <span className="tx-word">
+      {[...word].map((ch, i) => {
+        const role = roles.get(ch.toUpperCase());
+        return role ? (
+          <span key={i} className={`tx-ch tx-ch-${role}`}>{ch}</span>
+        ) : (
+          <span key={i}>{ch}</span>
+        );
+      })}
+    </span>
+  );
+}
+
+/** Empty, `?`, `+`, or `-` means unknown; otherwise a signed integer. */
+function parseValue(text: string): number | null {
+  const s = text.trim();
+  return /^[+-]?\d+$/.test(s) ? Number(s) : null;
+}
+
 export function TransmissionsScreen({ game }: { game: GameApi }) {
   const { t } = useI18n();
   const { state, update } = game;
@@ -29,8 +64,13 @@ export function TransmissionsScreen({ game }: { game: GameApi }) {
   const [showQr, setShowQr] = useState<Transmission | null>(null);
   const [scan, setScan] = useState(false);
   const [explain, setExplain] = useState<string | null>(null);
+  // Scientist-only inline score entry: faster than the QR round-trip.
+  const [editing, setEditing] = useState<string | null>(null);
+  const [draft, setDraft] = useState('');
+  const skipBlur = useRef(false);
 
   const cipher = state.cipher;
+  const roles = useMemo(() => roleMap(cipher), [cipher]);
   // A cipher (own for the Alien, hypothesis for the Scientist) can score words
   // even while incomplete; such scores are provisional until all 6 slots fill.
   const usable = cipher && anyLetter(cipher);
@@ -66,6 +106,24 @@ export function TransmissionsScreen({ game }: { game: GameApi }) {
     update((s) => ({ ...s, transmissions: s.transmissions.filter((x) => x.id !== id) }));
   };
 
+  const setValue = (id: string, value: number | null) =>
+    update((s) => ({
+      ...s,
+      transmissions: s.transmissions.map((x) => (x.id === id ? { ...x, value } : x)),
+    }));
+
+  const openEditor = (tx: Transmission) => {
+    setExplain(null);
+    setDraft(tx.value === null ? '' : String(tx.value));
+    setEditing(tx.id);
+  };
+
+  const commitEditor = () => {
+    if (editing === null) return;
+    setValue(editing, parseValue(draft));
+    setEditing(null);
+  };
+
   /**
    * Import a word (+ optional score). A word already logged is updated in place,
    * keeping its owner — so the Scientist can attach the score the Alien returns
@@ -98,8 +156,9 @@ export function TransmissionsScreen({ game }: { game: GameApi }) {
 
   const matchState = (tx: Transmission): 'match' | 'mismatch' | null => {
     // Confident verdict only with a complete hypothesis; provisional scores can
-    // still mismatch, but a partial "match" would be a false comfort.
-    if (!isScientist || !complete || tx.value === null || tx.from !== 'alien') return null;
+    // still mismatch, but a partial "match" would be a false comfort. Every
+    // scored word counts, the Scientist's own words included.
+    if (!isScientist || !complete || tx.value === null) return null;
     return scoreWord(cipher!, tx.word) === tx.value ? 'match' : 'mismatch';
   };
 
@@ -138,7 +197,7 @@ export function TransmissionsScreen({ game }: { game: GameApi }) {
                 <span className={`side-mark side-${tx.from}`} title={t(`side.${tx.from}`)}>
                   <Icon name={tx.from} size={16} />
                 </span>
-                <span className="tx-word">{tx.word}</span>
+                <CipherWord word={tx.word} roles={roles} />
                 {ms && <Icon name={ms} size={15} className={`tx-match-icon ${ms}`} />}
               </div>
               <div className="tx-row2">
@@ -151,15 +210,49 @@ export function TransmissionsScreen({ game }: { game: GameApi }) {
                       {provisional ? '~' : ''}{formatScore(calc)}
                     </span>
                   )}
-                  <button
-                    type="button"
-                    className="tx-value-btn"
-                    title={tx.value !== null ? scoreMeaning(tx.value, t) : undefined}
-                    onClick={() => setExplain(explain === tx.id ? null : tx.id)}
-                  >
-                    <ValueIcon value={tx.value} />
-                    <span className="tx-value">{formatScore(tx.value)}</span>
-                  </button>
+                  {isScientist && editing === tx.id ? (
+                    <input
+                      className="tx-value-input"
+                      inputMode="numeric"
+                      autoFocus
+                      value={draft}
+                      placeholder="?"
+                      aria-label={t('tx.setValue')}
+                      onChange={(e) => setDraft(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') commitEditor();
+                        else if (e.key === 'Escape') {
+                          skipBlur.current = true;
+                          setEditing(null);
+                        }
+                      }}
+                      onBlur={() => {
+                        if (skipBlur.current) {
+                          skipBlur.current = false;
+                          return;
+                        }
+                        commitEditor();
+                      }}
+                    />
+                  ) : (
+                    <button
+                      type="button"
+                      className="tx-value-btn"
+                      title={
+                        isScientist
+                          ? t('tx.setValue')
+                          : tx.value !== null
+                            ? scoreMeaning(tx.value, t)
+                            : undefined
+                      }
+                      onClick={() =>
+                        isScientist ? openEditor(tx) : setExplain(explain === tx.id ? null : tx.id)
+                      }
+                    >
+                      <ValueIcon value={tx.value} />
+                      <span className="tx-value">{formatScore(tx.value)}</span>
+                    </button>
+                  )}
                 </div>
                 <div className="tx-actions">
                   <button type="button" className="link" onClick={() => setShowQr(tx)}>
@@ -172,6 +265,9 @@ export function TransmissionsScreen({ game }: { game: GameApi }) {
               </div>
               {explain === tx.id && tx.value !== null && (
                 <div className="tx-explain small muted">{scoreMeaning(tx.value, t)}</div>
+              )}
+              {isScientist && editing === tx.id && parseValue(draft) !== null && (
+                <div className="tx-explain small muted">{scoreMeaning(parseValue(draft)!, t)}</div>
               )}
             </li>
           );

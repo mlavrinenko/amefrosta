@@ -1,14 +1,12 @@
 import { useState } from 'react';
 import { useI18n } from '../i18n';
 import { PACKS, PACK_CODES, type PackCode } from '../packs';
-import { defaultState, emptyTerminal, type Side } from '../state/state';
+import { defaultState, emptyTerminal, SIDES } from '../state/state';
 import type { GameApi } from '../state/useGame';
 import { Sheet } from './Sheet';
 import { Icon } from './icons/Icon';
 
 import creditsMd from '../../CREDITS.md?raw';
-
-const SIDES: Side[] = ['alien', 'scientist'];
 
 export function SettingsSheet({ game, onClose }: { game: GameApi; onClose: () => void }) {
   const { t } = useI18n();

@@ -4,7 +4,6 @@ import {
   SLOT_COUNT,
   allowedTiersForSlot,
   emptyCipher,
-  generateCipher,
   legalLettersForSlot,
   slotAllowed,
   validateCipher,
@@ -21,7 +20,6 @@ const ALL_TIERS: Tier[] = ['common', 'uncommon', 'rare'];
 export function CipherEditor({ game }: { game: GameApi }) {
   const { t, pack } = useI18n();
   const { state, update } = game;
-  const isScientist = state.side === 'scientist';
   const cipher = state.cipher ?? emptyCipher();
   const [sel, setSel] = useState<{ cat: Category; i: number } | null>(null);
 
@@ -45,24 +43,12 @@ export function CipherEditor({ game }: { game: GameApi }) {
       return { ...s, cipher: next };
     });
 
-  const generate = () => {
-    update((s) => ({ ...s, cipher: generateCipher(pack, Math.random) }));
-    setSel(null);
-  };
-
   const legalSet = new Set(sel ? legalLettersForSlot(pack, cipher, sel.cat, sel.i) : []);
 
   return (
     <div className="cipher-editor">
-      {/* Regenerate is an Alien setup convenience; the Scientist builds by hand. */}
-      {!isScientist && (
-        <div className="row">
-          <button type="button" className="primary" onClick={generate}>
-            {state.cipher ? t('cipher.regenerate') : t('cipher.generate')}
-          </button>
-        </div>
-      )}
-
+      {/* The dice-roll "Create random" lives in the sheet header (Alien only);
+          the Scientist builds by hand. */}
       <div className="editor-groups">
         {CATEGORIES.map((cat) => (
           <div key={cat} className={`editor-group${groupHasError(cat) ? ' cipher-error' : ''}`}>

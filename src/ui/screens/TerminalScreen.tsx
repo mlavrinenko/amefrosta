@@ -9,6 +9,7 @@ import {
   type Warning,
 } from '../../engine';
 import { CATEGORIES, type Category, type Mark } from '../../state/state';
+import { scoredSignals } from '../../state/signals';
 import type { GameApi } from '../../state/useGame';
 import { MatrixCell } from '../MatrixCell';
 import { TierGlyph } from '../TierGlyph';
@@ -30,13 +31,28 @@ export function TerminalScreen({ game }: { game: GameApi }) {
   // Every scored transmission is an Alien cipher score, whoever typed the word:
   // the Scientist's own words carry the score the Alien returned, so they deduce
   // just the same. Both sides run this — the Alien previews what it has leaked.
-  const signals = useMemo<Signal[]>(
-    () =>
-      state.transmissions
-        .filter((tx) => tx.value !== null)
-        .map((tx) => ({ word: tx.word, value: tx.value as number })),
-    [state.transmissions],
-  );
+  const signals = useMemo<Signal[]>(() => scoredSignals(state.transmissions), [state.transmissions]);
+
+  // Per-letter frequency across the scored words: how many distinct words hold
+  // the letter (docs) and its total occurrence count. Replaces the old role
+  // chip, which merely echoed the confirmed cell's checkmark.
+  const freq = useMemo(() => {
+    const m: Record<string, { docs: number; total: number }> = {};
+    for (const l of pack.alphabet) m[l] = { docs: 0, total: 0 };
+    for (const sig of signals) {
+      const seen = new Set<string>();
+      for (const ch of sig.word.toUpperCase()) {
+        const cell = m[ch];
+        if (!cell) continue;
+        cell.total++;
+        if (!seen.has(ch)) {
+          cell.docs++;
+          seen.add(ch);
+        }
+      }
+    }
+    return m;
+  }, [signals, pack.alphabet]);
 
   const deductions = useMemo(() => deduceCipher(pack, signals), [pack, signals]);
 
@@ -206,7 +222,18 @@ export function TerminalScreen({ game }: { game: GameApi }) {
                 {status === 'junk' ? (
                   <Icon name="trash" size={13} className="mrow-junk" />
                 ) : (
-                  status !== 'open' && <span className={`mrow-chip chip-${status}`}>{EFFECT[status]}</span>
+                  freq[letter].docs > 0 && (
+                    <span
+                      className="mrow-freq"
+                      title={fmt(t('terminal.freqTitle'), {
+                        docs: freq[letter].docs,
+                        total: freq[letter].total,
+                      })}
+                    >
+                      {freq[letter].docs}
+                      <span className="mrow-freq-total">·{freq[letter].total}</span>
+                    </span>
+                  )
                 )}
               </th>
               {CATEGORIES.map((cat) => {

@@ -1,10 +1,8 @@
 import { useI18n } from '../i18n';
 import { PACKS, PACK_CODES, type PackCode } from '../packs';
-import { type Side } from '../state/state';
+import { SIDES, type Side } from '../state/state';
 import type { GameApi } from '../state/useGame';
 import { Icon } from './icons/Icon';
-
-const SIDES: Side[] = ['alien', 'scientist'];
 
 export function WelcomeSheet({ game, onClose }: { game: GameApi; onClose: () => void }) {
   const { t } = useI18n();

@@ -5,10 +5,13 @@ import { useI18n } from '../i18n';
 export function Sheet({
   title,
   onClose,
+  action,
   children,
 }: {
   title: string;
   onClose: () => void;
+  /** Optional control rendered in the header, between the title and Close. */
+  action?: ReactNode;
   children: ReactNode;
 }) {
   const { t } = useI18n();
@@ -26,6 +29,7 @@ export function Sheet({
       <div className="sheet" onClick={(e) => e.stopPropagation()}>
         <div className="sheet-head">
           <h2 className="sheet-title">{title}</h2>
+          {action}
           <button type="button" className="link" onClick={onClose}>
             {t('common.close')}
           </button>

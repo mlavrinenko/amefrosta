@@ -4,21 +4,18 @@ import {
   cipherConsistency,
   cipherMarkStatus,
   cipherSignature,
+  generateCipher,
   isCipherComplete,
   validateCipher,
   type SlotMark,
 } from '../engine';
 import type { Cipher } from '../engine/types';
-import { CATEGORIES, type Terminal, type Transmission } from '../state/state';
+import { CATEGORIES, type Terminal } from '../state/state';
+import { scoredSignals } from '../state/signals';
 import type { GameApi } from '../state/useGame';
 import { Sheet } from './Sheet';
 import { CipherEditor } from './CipherEditor';
 import { Icon } from './icons/Icon';
-
-const alienSignals = (txs: Transmission[]) =>
-  txs
-    .filter((tx) => tx.from === 'alien' && tx.value !== null)
-    .map((tx) => ({ word: tx.word, value: tx.value as number }));
 
 const anyLetter = (c: Cipher) =>
   [...c.trust, ...c.amplify, ...c.suspicion].some((l) => l.length > 0);
@@ -59,7 +56,9 @@ export function CipherSheet({ game, onClose }: { game: GameApi; onClose: () => v
   const { t, pack } = useI18n();
   const { state, update } = game;
   const isScientist = state.side === 'scientist';
-  const signals = alienSignals(state.transmissions);
+  // Accuracy counts every scored word, the Scientist's own included: each got a
+  // real score back from the Alien, so each is a signal a hypothesis must fit.
+  const signals = scoredSignals(state.transmissions);
   const terminal: Terminal = state.terminal;
 
   // Auto-archive a scientist's completed, valid hypothesis (deduped by signature).
@@ -88,6 +87,7 @@ export function CipherSheet({ game, onClose }: { game: GameApi; onClose: () => v
   const activeCons = activeUsable ? cipherConsistency(state.cipher!, signals) : null;
   const activePartial = !!state.cipher && anyLetter(state.cipher) && !isCipherComplete(state.cipher);
 
+  const randomize = () => update((s) => ({ ...s, cipher: generateCipher(pack, Math.random) }));
   const activate = (c: Cipher) => update((s) => ({ ...s, cipher: c }));
   const remove = (c: Cipher) => {
     if (!confirm(t('cipher.deleteConfirm'))) return;
@@ -103,7 +103,23 @@ export function CipherSheet({ game, onClose }: { game: GameApi; onClose: () => v
   };
 
   return (
-    <Sheet title={t(isScientist ? 'cipher.titleGuess' : 'cipher.titleSecret')} onClose={onClose}>
+    <Sheet
+      title={t(isScientist ? 'cipher.titleGuess' : 'cipher.titleSecret')}
+      onClose={onClose}
+      action={
+        isScientist ? undefined : (
+          <button
+            type="button"
+            className="sheet-action"
+            onClick={randomize}
+            title={t('cipher.random')}
+          >
+            <Icon name="dice" size={18} />
+            <span>{t('cipher.random')}</span>
+          </button>
+        )
+      }
+    >
       <CipherEditor game={game} />
 
       {isScientist && activeCons && (
