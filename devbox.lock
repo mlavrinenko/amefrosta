@@ -1,0 +1,206 @@
+{
+  "lockfile_version": "1",
+  "packages": {
+    "github:NixOS/nixpkgs/nixpkgs-unstable": {
+      "last_modified": "2026-06-16T10:57:20Z",
+      "resolved": "github:NixOS/nixpkgs/3e41b24abd260e8f71dbe2f5737d24122f972158?lastModified=1781607440&narHash=sha256-rxO%2Buc%2FKFbSJp%2BpgyXRuAX6QlG9hJdnt0BXpEQRXY%2BU%3D"
+    },
+    "just@latest": {
+      "last_modified": "2026-06-27T07:37:20Z",
+      "resolved": "github:NixOS/nixpkgs/3d46470bb3030020f7e1361f33514854f5bfa86d#just",
+      "source": "devbox-search",
+      "version": "1.54.0",
+      "systems": {
+        "aarch64-darwin": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/gdbxf7azmrwyr00k313r888rw3gr6mfd-just-1.54.0",
+              "default": true
+            },
+            {
+              "name": "man",
+              "path": "/nix/store/y0476rym2901gafsxcr29w07778qdbf5-just-1.54.0-man",
+              "default": true
+            },
+            {
+              "name": "doc",
+              "path": "/nix/store/viaamsidc2a6i9hsk7sslcin5ccisiba-just-1.54.0-doc"
+            }
+          ],
+          "store_path": "/nix/store/gdbxf7azmrwyr00k313r888rw3gr6mfd-just-1.54.0"
+        },
+        "aarch64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/gbw1366v4d2hp3lffvz3k4bvig8h79vp-just-1.54.0",
+              "default": true
+            },
+            {
+              "name": "man",
+              "path": "/nix/store/fsx5gcfax6fhhyb1cxq2a6r6qn7604wd-just-1.54.0-man",
+              "default": true
+            },
+            {
+              "name": "doc",
+              "path": "/nix/store/vakwrh7cdzs3c7rklgbz3r0ivdd7v6dq-just-1.54.0-doc"
+            }
+          ],
+          "store_path": "/nix/store/gbw1366v4d2hp3lffvz3k4bvig8h79vp-just-1.54.0"
+        },
+        "x86_64-darwin": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/qlms9i3zdsqpfwmdslpkl2xdcs6k76ba-just-1.54.0",
+              "default": true
+            },
+            {
+              "name": "man",
+              "path": "/nix/store/x78s7737cb11q36isfcd11h24jff2h2p-just-1.54.0-man",
+              "default": true
+            },
+            {
+              "name": "doc",
+              "path": "/nix/store/br88ib3kmmiydm96k4c2m4nnmrgq3zcj-just-1.54.0-doc"
+            }
+          ],
+          "store_path": "/nix/store/qlms9i3zdsqpfwmdslpkl2xdcs6k76ba-just-1.54.0"
+        },
+        "x86_64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/jkvmgfmklm7q60sd4jl56h0315kbgi27-just-1.54.0",
+              "default": true
+            },
+            {
+              "name": "man",
+              "path": "/nix/store/8y75gr1mhidc6b7x56kalk5ydqni9bf4-just-1.54.0-man",
+              "default": true
+            },
+            {
+              "name": "doc",
+              "path": "/nix/store/ghqfn9gcdravrniw7iacpb46g00wf1fk-just-1.54.0-doc"
+            }
+          ],
+          "store_path": "/nix/store/jkvmgfmklm7q60sd4jl56h0315kbgi27-just-1.54.0"
+        }
+      }
+    },
+    "nodejs@22": {
+      "last_modified": "2026-06-27T07:37:20Z",
+      "plugin_version": "0.0.2",
+      "resolved": "github:NixOS/nixpkgs/3d46470bb3030020f7e1361f33514854f5bfa86d#nodejs_22",
+      "source": "devbox-search",
+      "version": "22.23.1",
+      "systems": {
+        "aarch64-darwin": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/smz0kkakhq96h1ipimiab6cf1yw4nn7n-nodejs-22.23.1",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/smz0kkakhq96h1ipimiab6cf1yw4nn7n-nodejs-22.23.1"
+        },
+        "aarch64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/26r12fb2ywx1q5f9paf1sjibsajz1q99-nodejs-22.23.1",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/26r12fb2ywx1q5f9paf1sjibsajz1q99-nodejs-22.23.1"
+        },
+        "x86_64-darwin": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/l1yfdvdrz1vl6f3wsyjglxgsk6r29rkn-nodejs-22.23.1",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/l1yfdvdrz1vl6f3wsyjglxgsk6r29rkn-nodejs-22.23.1"
+        },
+        "x86_64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/znxrv89969njb8fxyyn8rz4ygmmcjpw9-nodejs-22.23.1",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/znxrv89969njb8fxyyn8rz4ygmmcjpw9-nodejs-22.23.1"
+        }
+      }
+    },
+    "poppler-utils@latest": {
+      "last_modified": "2026-06-27T07:37:20Z",
+      "resolved": "github:NixOS/nixpkgs/3d46470bb3030020f7e1361f33514854f5bfa86d#poppler-utils",
+      "source": "devbox-search",
+      "version": "25.10.0",
+      "systems": {
+        "aarch64-darwin": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/2k2qs2m0mv7gbryc4cdwfb0pj14r90nn-poppler-utils-25.10.0",
+              "default": true
+            },
+            {
+              "name": "dev",
+              "path": "/nix/store/cp331r9bw0q29h4a24lma4wd5pg9njdl-poppler-utils-25.10.0-dev"
+            }
+          ],
+          "store_path": "/nix/store/2k2qs2m0mv7gbryc4cdwfb0pj14r90nn-poppler-utils-25.10.0"
+        },
+        "aarch64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/491gc7s5w13ckdnnwhxsazi4h4lrf2j4-poppler-utils-25.10.0",
+              "default": true
+            },
+            {
+              "name": "dev",
+              "path": "/nix/store/dczkc70ll8ni21g9qa9avz0w8lawlkr4-poppler-utils-25.10.0-dev"
+            }
+          ],
+          "store_path": "/nix/store/491gc7s5w13ckdnnwhxsazi4h4lrf2j4-poppler-utils-25.10.0"
+        },
+        "x86_64-darwin": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/3cdjq4gwbj0s8lmkn4xm4is4np64rxvz-poppler-utils-25.10.0",
+              "default": true
+            },
+            {
+              "name": "dev",
+              "path": "/nix/store/x05g8iyn0pzs3zg42smrfcgg9n0lpyg9-poppler-utils-25.10.0-dev"
+            }
+          ],
+          "store_path": "/nix/store/3cdjq4gwbj0s8lmkn4xm4is4np64rxvz-poppler-utils-25.10.0"
+        },
+        "x86_64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/rna2sq3vglrzzlqnrxnyfh2qx3vlkb2q-poppler-utils-25.10.0",
+              "default": true
+            },
+            {
+              "name": "dev",
+              "path": "/nix/store/q7rhydy8dvxx3i5zkhhqh59savb1lc15-poppler-utils-25.10.0-dev"
+            }
+          ],
+          "store_path": "/nix/store/rna2sq3vglrzzlqnrxnyfh2qx3vlkb2q-poppler-utils-25.10.0"
+        }
+      }
+    }
+  }
+}

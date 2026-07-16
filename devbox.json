@@ -1,0 +1,11 @@
+{
+  "$schema": "https://raw.githubusercontent.com/jetify-com/devbox/0.17.2/.schema/devbox.schema.json",
+  "packages": [
+    "poppler-utils@latest",
+    "nodejs@22",
+    "just@latest"
+  ],
+  "env": {
+    "PATH": "$PWD/node_modules/.bin:$PATH"
+  }
+}
