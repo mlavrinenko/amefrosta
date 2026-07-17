@@ -1199,6 +1199,14 @@ textarea.notes.tall {
   outline-offset: -3px;
 }
 
+/* Letter appears in the Alien's words — same highlight as the slots/strip, so
+   you can see at a glance which letters the words already exercise while you
+   build the cipher. */
+.pick.used {
+  background: var(--used-bg);
+  border-color: var(--used-border);
+}
+
 /* Cipher archive */
 .archive {
   margin-top: 18px;

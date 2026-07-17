@@ -140,17 +140,24 @@ export function CipherEditor({ game }: { game: GameApi }) {
               // Placed in another slot: picking relocates it here.
               const at = findLetter(cipher, letter);
               const elsewhere = !!at && !(at.cat === sel.cat && at.i === sel.i);
+              const isUsed = used.has(letter);
+              const title = elsewhere
+                ? `${t(`cipher.${at!.cat}`)} → ${t(`cipher.${sel.cat}`)}`
+                : isUsed
+                  ? t('cipher.usedInWords')
+                  : undefined;
               return (
                 <button
                   key={letter}
                   type="button"
                   disabled={!ok}
-                  title={elsewhere ? `${t(`cipher.${at!.cat}`)} → ${t(`cipher.${sel.cat}`)}` : undefined}
+                  title={title}
                   className={
                     `pick tier-${tier}${ok ? '' : ' disabled'}` +
                     (tConfirm ? ' tconfirm' : '') +
                     (tRuled ? ' truled' : '') +
-                    (elsewhere ? ' placed' : '')
+                    (elsewhere ? ' placed' : '') +
+                    (isUsed ? ' used' : '')
                   }
                   onClick={() => {
                     pickSlot(sel.cat, sel.i, letter);
