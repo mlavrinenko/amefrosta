@@ -23,15 +23,25 @@ export interface Transmission {
   at: number;
 }
 
+/** How the Terminal orders its letter rows. */
+export type TerminalSort = 'alpha' | 'used' | 'freq';
+export const TERMINAL_SORTS: TerminalSort[] = ['alpha', 'used', 'freq'];
+
 /** Persisted UI preferences (survive tab switches and reloads). */
 export interface Prefs {
   /** Show the one-line instruction tip on the Terminal. */
   showTips: boolean;
   /** Show the deduction suggestion panel on the Terminal. */
   showHints: boolean;
+  /** Terminal row order: alphabetical, used-first, or by frequency. */
+  terminalSort: TerminalSort;
 }
 
-export const defaultPrefs = (): Prefs => ({ showTips: true, showHints: true });
+export const defaultPrefs = (): Prefs => ({
+  showTips: true,
+  showHints: true,
+  terminalSort: 'alpha',
+});
 
 export interface GameState {
   version: 5;

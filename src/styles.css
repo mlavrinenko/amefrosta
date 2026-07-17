@@ -693,6 +693,33 @@ textarea.notes.tall {
   cursor: pointer;
 }
 
+/* Terminal row-order toggle */
+.term-sort {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.term-sort > .muted {
+  margin-right: 2px;
+}
+
+.sort-btn {
+  padding: 5px 10px;
+  border: 1px solid #ffffff1f;
+  border-radius: 999px;
+  background: var(--panel-2);
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.sort-btn.active {
+  background: var(--side-bg);
+  border-color: var(--side-border);
+  color: var(--side-text);
+}
+
 .junk-controls {
   display: flex;
   gap: 8px;

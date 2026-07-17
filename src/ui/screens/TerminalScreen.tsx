@@ -8,7 +8,13 @@ import {
   type Suggestion,
   type Warning,
 } from '../../engine';
-import { CATEGORIES, type Category, type Mark, type Side } from '../../state/state';
+import {
+  CATEGORIES,
+  TERMINAL_SORTS,
+  type Category,
+  type Mark,
+  type Side,
+} from '../../state/state';
 import { scoredSignals, alienWordLetters } from '../../state/signals';
 import type { GameApi } from '../../state/useGame';
 import { MatrixCell } from '../MatrixCell';
@@ -112,7 +118,26 @@ export function TerminalScreen({ game }: { game: GameApi }) {
   const junkLetters = rows.filter((r) => r.status === 'junk').map((r) => r.letter);
   const hiddenJunk = junkLetters.filter((l) => hiddenSet.has(l));
   const visibleJunk = junkLetters.filter((l) => !hiddenSet.has(l));
-  const visible = rows.filter((r) => !(r.status === 'junk' && hiddenSet.has(r.letter)));
+
+  // Row order: alphabetical (pack order), used-first (letters in the Alien's
+  // words float to the top), or by descending total frequency. Ties fall back
+  // to the pack order so the active alphabet stays grouped and stable.
+  const sort = state.prefs.terminalSort;
+  const alphaIdx = (l: string) => pack.alphabet.indexOf(l);
+  const totalFreq = (l: string) => freq[l].alien.total + freq[l].scientist.total;
+  const sortedRows = [...rows];
+  if (sort === 'used') {
+    sortedRows.sort(
+      (a, b) =>
+        Number(usedLetters.has(b.letter)) - Number(usedLetters.has(a.letter)) ||
+        alphaIdx(a.letter) - alphaIdx(b.letter),
+    );
+  } else if (sort === 'freq') {
+    sortedRows.sort(
+      (a, b) => totalFreq(b.letter) - totalFreq(a.letter) || alphaIdx(a.letter) - alphaIdx(b.letter),
+    );
+  }
+  const visible = sortedRows.filter((r) => !(r.status === 'junk' && hiddenSet.has(r.letter)));
 
   const confirmedCount = (cat: Category) =>
     pack.alphabet.reduce((n, l) => n + (mark(cat, l).confirmed ? 1 : 0), 0);
@@ -236,6 +261,20 @@ export function TerminalScreen({ game }: { game: GameApi }) {
           )}
         </div>
       )}
+
+      <div className="term-sort" role="group" aria-label={t('terminal.sort')}>
+        <span className="muted small">{t('terminal.sort')}</span>
+        {TERMINAL_SORTS.map((k) => (
+          <button
+            key={k}
+            type="button"
+            className={`sort-btn${sort === k ? ' active' : ''}`}
+            onClick={() => setPref({ terminalSort: k })}
+          >
+            {t(`terminal.sort.${k}`)}
+          </button>
+        ))}
+      </div>
 
       <table className="matrix">
         <thead>

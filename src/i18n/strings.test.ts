@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { STRINGS } from './strings';
-import { CATEGORIES, SIDES } from '../state/state';
+import { CATEGORIES, SIDES, TERMINAL_SORTS } from '../state/state';
 import { SUGGESTION_REASONS } from '../engine';
 
 /**
@@ -59,6 +59,7 @@ const dynamicKeys = [
   ...CATEGORIES.map((c) => `cipher.${c}`),
   ...SIDES.map((s) => `side.${s}`),
   ...SUGGESTION_REASONS.map((r) => `suggest.why.${r}`),
+  ...TERMINAL_SORTS.map((k) => `terminal.sort.${k}`),
 ];
 
 const requested = new Set([
