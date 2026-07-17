@@ -65,6 +65,50 @@ export function legalLettersForSlot(
   });
 }
 
+/**
+ * Letters offerable in slot (cat, i) when a letter already placed elsewhere may
+ * be *relocated* into it. Unlike legalLettersForSlot this does not reject a
+ * letter just because it sits in another slot — picking it moves it here (the
+ * caller clears its old slot). Tier fit is still required, and the one-rare cap
+ * still holds: a rare is offered only when no *other* slot (ignoring this
+ * letter's own placement and the target) already holds a rare.
+ */
+export function pickableLettersForSlot(
+  pack: LanguagePack,
+  cipher: Cipher,
+  cat: Category,
+  i: number,
+): string[] {
+  const allowed = new Set(slotAllowed(cat, i));
+  return pack.alphabet.filter((l) => {
+    const L = upper(l);
+    const tier = pack.tiers[L];
+    if (!tier || !allowed.has(tier)) return false;
+    if (tier === 'rare') {
+      const otherRare = (['trust', 'amplify', 'suspicion'] as Category[]).some((c) =>
+        cipher[c].some((x, idx) => {
+          if (c === cat && idx === i) return false; // the target slot
+          const X = upper(x);
+          if (X === L) return false; // this letter's own placement — it moves
+          return pack.tiers[X] === 'rare';
+        }),
+      );
+      if (otherRare) return false;
+    }
+    return true;
+  });
+}
+
+/** Where a letter currently sits, or null. Letters are distinct, so at most one. */
+export function findLetter(cipher: Cipher, letter: string): { cat: Category; i: number } | null {
+  const L = upper(letter);
+  for (const c of ['trust', 'amplify', 'suspicion'] as Category[]) {
+    const idx = cipher[c].findIndex((x) => upper(x) === L);
+    if (idx >= 0) return { cat: c, i: idx };
+  }
+  return null;
+}
+
 /** Tiers still fillable in slot (cat, i) — for fading impossible ones in the UI. */
 export function allowedTiersForSlot(
   pack: LanguagePack,

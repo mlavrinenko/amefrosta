@@ -70,7 +70,7 @@ export function SettingsSheet({ game, onClose }: { game: GameApi; onClose: () =>
           type="button"
           onClick={() => {
             if (confirm(t('setup.clearTerminalConfirm'))) {
-              update((s) => ({ ...s, terminal: emptyTerminal() }));
+              update((s) => ({ ...s, terminal: emptyTerminal(), hiddenLetters: [] }));
             }
           }}
         >

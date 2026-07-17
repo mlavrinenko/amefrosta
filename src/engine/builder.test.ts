@@ -4,6 +4,8 @@ import {
   emptyCipher,
   slotAllowed,
   legalLettersForSlot,
+  pickableLettersForSlot,
+  findLetter,
   allowedTiersForSlot,
   cipherSignature,
 } from './builder';
@@ -45,6 +47,39 @@ describe('legalLettersForSlot', () => {
     const c: Cipher = { trust: ['', '', ''], amplify: ['', ''], suspicion: ['O'] };
     const legal = legalLettersForSlot(en, c, 'suspicion', 0);
     expect(legal).toContain('O'); // own letter is replaceable, not blocked as "used"
+  });
+});
+
+describe('pickableLettersForSlot', () => {
+  it('offers a letter already placed in another role (for relocation)', () => {
+    const c: Cipher = { trust: ['E', '', ''], amplify: ['', ''], suspicion: [''] };
+    // E sits in trust; it may still be picked into suspicion (moves it there).
+    expect(pickableLettersForSlot(en, c, 'suspicion', 0)).toContain('E');
+    // legalLettersForSlot still refuses it, guarding the non-relocation path.
+    expect(legalLettersForSlot(en, c, 'suspicion', 0)).not.toContain('E');
+  });
+
+  it('still enforces the slot tier', () => {
+    const c: Cipher = { trust: ['E', '', ''], amplify: ['', ''], suspicion: [''] };
+    // E is common; the trust uncommon slot cannot take it even by relocation.
+    expect(pickableLettersForSlot(en, c, 'trust', 1)).not.toContain('E');
+  });
+
+  it('lets a placed rare relocate but blocks a second rare', () => {
+    const c: Cipher = { trust: ['', '', 'J'], amplify: ['', ''], suspicion: [''] };
+    // J (rare) already placed — offer it in the amplify rare slot (relocation).
+    expect(pickableLettersForSlot(en, c, 'amplify', 1)).toContain('J');
+    // but a different rare stays blocked (one rare overall).
+    expect(pickableLettersForSlot(en, c, 'amplify', 1)).not.toContain('K');
+  });
+});
+
+describe('findLetter', () => {
+  it('locates a letter across roles, or returns null', () => {
+    const c: Cipher = { trust: ['E', '', ''], amplify: ['', 'X'], suspicion: [''] };
+    expect(findLetter(c, 'E')).toEqual({ cat: 'trust', i: 0 });
+    expect(findLetter(c, 'X')).toEqual({ cat: 'amplify', i: 1 });
+    expect(findLetter(c, 'Z')).toBeNull();
   });
 });
 

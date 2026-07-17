@@ -197,7 +197,15 @@ export function TransmissionsScreen({ game }: { game: GameApi }) {
                 <span className={`side-mark side-${tx.from}`} title={t(`side.${tx.from}`)}>
                   <Icon name={tx.from} size={16} />
                 </span>
-                <CipherWord word={tx.word} roles={roles} />
+                {/* Tap the word to unfold what its score means. */}
+                <button
+                  type="button"
+                  className="tx-word-btn"
+                  title={tx.value !== null ? scoreMeaning(tx.value, t) : undefined}
+                  onClick={() => setExplain(explain === tx.id ? null : tx.id)}
+                >
+                  <CipherWord word={tx.word} roles={roles} />
+                </button>
                 {ms && <Icon name={ms} size={15} className={`tx-match-icon ${ms}`} />}
               </div>
               <div className="tx-row2">

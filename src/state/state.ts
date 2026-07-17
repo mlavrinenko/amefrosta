@@ -29,11 +29,9 @@ export interface Prefs {
   showTips: boolean;
   /** Show the deduction suggestion panel on the Terminal. */
   showHints: boolean;
-  /** Fold resolved (junk) rows out of the Terminal matrix. */
-  hideJunk: boolean;
 }
 
-export const defaultPrefs = (): Prefs => ({ showTips: true, showHints: true, hideJunk: false });
+export const defaultPrefs = (): Prefs => ({ showTips: true, showHints: true });
 
 export interface GameState {
   version: 5;
@@ -44,6 +42,8 @@ export interface GameState {
   /** Scientist's saved cipher hypotheses (complete + valid snapshots). */
   cipherArchive: Cipher[];
   terminal: Terminal;
+  /** Letters the player folded away in the Terminal (only hidden while junk). */
+  hiddenLetters: string[];
   prefs: Prefs;
   notes: string;
   transmissions: Transmission[];
@@ -76,6 +76,7 @@ export function defaultState(): GameState {
     cipher: null,
     cipherArchive: [],
     terminal: emptyTerminal(),
+    hiddenLetters: [],
     prefs: defaultPrefs(),
     notes: '',
     transmissions: [],
@@ -119,6 +120,9 @@ export function loadState(): GameState {
       version: 5,
       cipherArchive: Array.isArray(parsed.cipherArchive) ? (parsed.cipherArchive as Cipher[]) : [],
       terminal: normalizeTerminal(parsed.terminal),
+      hiddenLetters: Array.isArray(parsed.hiddenLetters)
+        ? (parsed.hiddenLetters as string[])
+        : [],
       prefs: { ...defaultPrefs(), ...parsed.prefs },
       transmissions: (parsed.transmissions ?? []).map(keepTx),
     };

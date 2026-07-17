@@ -10,6 +10,14 @@
   --uncommon: #9aa4b2;
   --rare: #ff6b6b;
   --signal: #e0a458;
+  /* Role colours — deliberately clear of the tier/frequency palette
+     (green / grey / red) so a role is never mistaken for a letter frequency. */
+  --trust: #35c9e8;
+  --amplify: #6c8cff;
+  --suspicion: #ff5f9e;
+  /* Letters present in the Alien's transmitted words (highlighter yellow). */
+  --used-bg: #ffd75c26;
+  --used-border: #ffd75c66;
   --radius: 12px;
 }
 
@@ -159,6 +167,12 @@ body {
 .strip-slot.empty {
   color: var(--muted);
   background: #ffffff05;
+}
+
+/* Letter appears in the Alien's words — highlighted for both sides. */
+.strip-slot.used {
+  background: var(--used-bg);
+  box-shadow: inset 0 0 0 1.5px var(--used-border);
 }
 
 .strip-slot .tier-glyph {
@@ -414,15 +428,15 @@ textarea.notes.tall {
 }
 
 .cat-trust {
-  color: var(--common);
+  color: var(--trust);
 }
 
 .cat-amplify {
-  color: var(--accent);
+  color: var(--amplify);
 }
 
 .cat-suspicion {
-  color: var(--danger);
+  color: var(--suspicion);
 }
 
 /* Deduction matrix: letters (rows) x roles (columns) */
@@ -441,7 +455,7 @@ textarea.notes.tall {
 }
 
 .mcol-letter {
-  width: 84px;
+  width: 104px;
 }
 
 .matrix thead th {
@@ -497,6 +511,11 @@ textarea.notes.tall {
   overflow: hidden;
 }
 
+/* Letter appears in the Alien's words — same highlight as the cipher strip. */
+.mrow-label.used {
+  background: var(--used-bg);
+}
+
 .mrow-letter {
   font-size: 16px;
 }
@@ -507,13 +526,37 @@ textarea.notes.tall {
   opacity: 0.8;
 }
 
-/* Letter frequency across scored words: distinct words · total occurrences. */
+/* Per-side word frequency as a fixed-cell table: two rows (Alien, then
+   Scientist), three columns (side icon, distinct words, total occurrences).
+   Every cell is the same width so the numbers line up column-wise across every
+   letter row; a dash marks a zero count. */
 .mrow-freq {
   margin-left: auto;
-  font-size: 11px;
+  display: grid;
+  grid-template-columns: 14px 15px 18px;
+  gap: 2px 3px;
+  font-size: 10px;
   font-weight: 700;
   font-variant-numeric: tabular-nums;
   color: var(--signal);
+}
+
+.mrow-freq-cell {
+  display: grid;
+  place-items: center;
+  line-height: 1;
+}
+
+.mrow-freq-ico {
+  flex: none;
+}
+
+.mrow-freq-ico.alien {
+  color: #b78bff;
+}
+
+.mrow-freq-ico.scientist {
+  color: #6cb6ff;
 }
 
 .mrow-freq-total {
@@ -565,11 +608,11 @@ textarea.notes.tall {
 }
 
 .mcell.candidate-suspicion {
-  box-shadow: inset 0 0 0 2px var(--side);
+  box-shadow: inset 0 0 0 2px var(--suspicion);
 }
 
 .mcell.candidate-trust {
-  box-shadow: inset 0 0 0 2px var(--common);
+  box-shadow: inset 0 0 0 2px var(--trust);
 }
 
 /* Suggestion cards */
@@ -650,9 +693,14 @@ textarea.notes.tall {
   cursor: pointer;
 }
 
-.junk-fold {
-  width: 100%;
+.junk-controls {
+  display: flex;
+  gap: 8px;
   margin-top: 8px;
+}
+
+.junk-fold {
+  flex: 1;
   padding: 8px;
   border: 1px dashed #ffffff24;
   border-radius: 8px;
@@ -660,6 +708,11 @@ textarea.notes.tall {
   color: var(--muted);
   font-size: 12px;
   cursor: pointer;
+}
+
+.junk-fold:disabled {
+  opacity: 0.4;
+  cursor: default;
 }
 
 /* Transmissions */
@@ -762,8 +815,19 @@ textarea.notes.tall {
   padding-left: 26px;
 }
 
-.tx-word {
+/* The word doubles as a button that unfolds its score explanation. */
+.tx-word-btn {
   flex: 1;
+  min-width: 0;
+  text-align: left;
+  background: none;
+  border: none;
+  padding: 0;
+  color: inherit;
+  cursor: pointer;
+}
+
+.tx-word {
   font-weight: 600;
   overflow-wrap: anywhere;
 }
@@ -774,15 +838,15 @@ textarea.notes.tall {
 }
 
 .tx-ch-trust {
-  color: var(--common);
+  color: var(--trust);
 }
 
 .tx-ch-amplify {
-  color: var(--accent);
+  color: var(--amplify);
 }
 
 .tx-ch-suspicion {
-  color: var(--danger);
+  color: var(--suspicion);
 }
 
 .tx-value-input {
@@ -1057,6 +1121,11 @@ textarea.notes.tall {
   border: 1px dashed #ffffff33;
 }
 
+.slot.used {
+  background: var(--used-bg);
+  box-shadow: inset 0 0 0 1.5px var(--used-border);
+}
+
 .slot-letter {
   font-size: 20px;
   font-weight: 700;
@@ -1116,12 +1185,18 @@ textarea.notes.tall {
 
 /* Terminal marks reflected in the picker */
 .pick.tconfirm {
-  box-shadow: inset 0 0 0 2px var(--common);
+  box-shadow: inset 0 0 0 2px var(--side);
 }
 
 .pick.truled {
   color: var(--danger);
   text-decoration: line-through;
+}
+
+/* A letter already placed in another slot — picking it relocates it here. */
+.pick.placed {
+  outline: 2px dashed var(--muted);
+  outline-offset: -3px;
 }
 
 /* Cipher archive */
