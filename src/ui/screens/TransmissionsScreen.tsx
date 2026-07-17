@@ -3,6 +3,7 @@ import { useI18n } from '../../i18n';
 import { isCipherComplete, parseImport, scoreWord } from '../../engine';
 import type { Cipher } from '../../engine/types';
 import { CATEGORIES, type Category, type Side, type Transmission } from '../../state/state';
+import { alienWordLetters } from '../../state/signals';
 import { newId } from '../../state/id';
 import type { GameApi } from '../../state/useGame';
 import { QrModal } from '../QrModal';
@@ -34,16 +35,32 @@ function roleMap(cipher: Cipher | null): Map<string, Category> {
   return m;
 }
 
-/** A word with each cipher letter tinted in its role colour. */
-function CipherWord({ word, roles }: { word: string; roles: Map<string, Category> }) {
+/**
+ * A word with each cipher letter tinted in its role colour. Pass `used` to also
+ * flag letters already spent in the Alien's words (highlighter-yellow), so the
+ * composer shows which letters a word reuses.
+ */
+function CipherWord({
+  word,
+  roles,
+  used,
+}: {
+  word: string;
+  roles: Map<string, Category>;
+  used?: Set<string>;
+}) {
   return (
     <span className="tx-word">
       {[...word].map((ch, i) => {
-        const role = roles.get(ch.toUpperCase());
-        return role ? (
-          <span key={i} className={`tx-ch tx-ch-${role}`}>{ch}</span>
-        ) : (
-          <span key={i}>{ch}</span>
+        const L = ch.toUpperCase();
+        const role = roles.get(L);
+        const parts: string[] = [];
+        if (role) parts.push('tx-ch', `tx-ch-${role}`);
+        if (used?.has(L)) parts.push('tx-ch-used');
+        return (
+          <span key={i} className={parts.join(' ') || undefined}>
+            {ch}
+          </span>
         );
       })}
     </span>
@@ -71,6 +88,10 @@ export function TransmissionsScreen({ game }: { game: GameApi }) {
 
   const cipher = state.cipher;
   const roles = useMemo(() => roleMap(cipher), [cipher]);
+  const usedLetters = useMemo(
+    () => alienWordLetters(state.transmissions),
+    [state.transmissions],
+  );
   // A cipher (own for the Alien, hypothesis for the Scientist) can score words
   // even while incomplete; such scores are provisional until all 6 slots fill.
   const usable = cipher && anyLetter(cipher);
@@ -81,6 +102,27 @@ export function TransmissionsScreen({ game }: { game: GameApi }) {
     () => (usable && word.trim() ? scoreWord(cipher!, word.trim()) : null),
     [usable, word, cipher],
   );
+
+  // Live per-role breakdown of the word being typed: how many Trust letters add
+  // +1 each, how many Amplify letters double the running total, whether the
+  // Suspicion letter is present (negates), and how many letters are already
+  // spent in the Alien's words. Drives the composer preview below the input.
+  const composer = useMemo(() => {
+    const w = word.trim().toUpperCase();
+    if (!usable || !w) return null;
+    let trust = 0;
+    let amplify = 0;
+    let suspicion = false;
+    let spent = 0;
+    for (const ch of w) {
+      const role = roles.get(ch);
+      if (role === 'trust') trust++;
+      else if (role === 'amplify') amplify++;
+      else if (role === 'suspicion') suspicion = true;
+      if (usedLetters.has(ch)) spent++;
+    }
+    return { trust, amplify, suspicion, spent };
+  }, [usable, word, roles, usedLetters]);
 
   /** Create a transmission, or fold a repeat word into the existing one. */
   const add = () => {
@@ -178,6 +220,37 @@ export function TransmissionsScreen({ game }: { game: GameApi }) {
           {t('tx.add')}
         </button>
       </div>
+
+      {composer && (
+        <div className="composer">
+          <CipherWord word={word.trim()} roles={roles} used={usedLetters} />
+          <div className="composer-breakdown">
+            {composer.trust > 0 && (
+              <span className="cb cat-trust" title={t('cipher.trust')}>
+                <Icon name="trust" size={12} /> +{composer.trust}
+              </span>
+            )}
+            {composer.amplify > 0 && (
+              <span className="cb cat-amplify" title={t('cipher.amplify')}>
+                <Icon name="amplify" size={12} /> ×{2 ** composer.amplify}
+              </span>
+            )}
+            {composer.suspicion && (
+              <span className="cb cat-suspicion" title={t('cipher.suspicion')}>
+                <Icon name="suspicion" size={12} /> −
+              </span>
+            )}
+            {composer.spent > 0 && (
+              <span className="cb cb-spent" title={t('cipher.usedInWords')}>
+                {composer.spent}
+              </span>
+            )}
+            <span className="cb cb-total">
+              = {provisional ? '~' : ''}{formatScore(autoValue)}
+            </span>
+          </div>
+        </div>
+      )}
 
       <div className="row">
         <button type="button" onClick={() => setScan(true)}>
