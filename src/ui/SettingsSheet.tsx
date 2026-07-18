@@ -5,6 +5,7 @@ import { CATEGORIES, defaultState, SIDES } from '../state/state';
 import type { GameApi } from '../state/useGame';
 import { Sheet } from './Sheet';
 import { Icon } from './icons/Icon';
+import { feedbackUrl } from './feedback';
 
 import creditsMd from '../../CREDITS.md?raw';
 
@@ -99,6 +100,15 @@ export function SettingsSheet({ game, onClose }: { game: GameApi; onClose: () =>
         <hr />
 
         <p className="muted small">{t('setup.about')}<br />{t('setup.disclaimer')}</p>
+
+        <button
+          type="button"
+          onClick={() =>
+            window.open(feedbackUrl(state.lang), '_blank', 'noopener,noreferrer')
+          }
+        >
+          {t('setup.feedback')}
+        </button>
 
         <button type="button" onClick={() => setShowCredits(true)}>
           {t('setup.credits')}

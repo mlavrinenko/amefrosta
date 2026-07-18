@@ -2,6 +2,7 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import basicSsl from '@vitejs/plugin-basic-ssl';
 import { VitePWA } from 'vite-plugin-pwa';
+import pkg from './package.json';
 
 // GitHub Pages serves the project at /<repo>/. Change if the repo is renamed.
 // Used for build AND preview so the preview mirrors production; dev also serves
@@ -10,6 +11,8 @@ const BASE = '/amefrosta/';
 
 export default defineConfig(({ command }) => ({
   base: BASE,
+  // Surfaced in feedback issue bodies so reports name the exact build.
+  define: { __APP_VERSION__: JSON.stringify(pkg.version) },
   plugins: [
     react(),
     // Dev serves over HTTPS with a self-signed cert so that a phone reaching
