@@ -21,17 +21,27 @@ your message card. Players exchange scored words via QR codes at the table.
 
 Open the application.
 
-1. **Setup** · Pick your language and side (Alien or Scientist) in the ⚙ tab.
+1. **Setup** · Pick your language and side (Alien or Scientist) from the ⚙ (gear)
+   button.
 2. **Message** · Roll the dice, then type your 3 secret words from your physical
    message card.
-3. **Cipher** · Alien: tap the cipher strip to generate a random valid cipher.
-   Scientist: build a hypothesis letter by letter as signals arrive.
+3. **Cipher** · Open the cipher strip from the header.
+   - Alien: tap Generate for a random valid cipher, or set slots by hand — the
+     picker only offers letters that fit each tier.
+   - Scientist: build a hypothesis letter by letter; completed guesses are
+     archived, ranked by how many signals they reproduce, and flagged if invalid.
 4. **Signals** · Type a transmission word. The Alien auto-scores it from their
-   cipher. Share/import entries via QR — Scientist shows a word, Alien scans and
-   returns the score, Scientist scans it back.
+   cipher.
+   - A live preview breaks the typed word into +Trust, ×Amplify and −Suspicion,
+     and flags letters already spent.
+   - Share/import entries via QR — Scientist shows a word, Alien scans and returns
+     the score, Scientist scans it back (or types it in).
 5. **Terminal** · Mark each letter's role (Trust / Amplify / Suspicion). Tap to
-   rule out, long-press to confirm. Hints suggest forced deductions.
-6. **Notes** · Free scratchpad for anything you want to remember.
+   rule out, long-press to confirm.
+   - Reorder rows A–Z, used-first, or by frequency.
+   - Hints flag forced deductions and apply in one tap.
+6. **Notes** · Free scratchpad, open from the header — for anything you want to
+   remember.
 
 Everything stays on your device. No accounts, no servers, no network — just QR
 codes face-to-face at the table.
