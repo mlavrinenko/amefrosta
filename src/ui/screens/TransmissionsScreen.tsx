@@ -344,11 +344,11 @@ export function TransmissionsScreen({ game }: { game: GameApi }) {
                   </button>
                 </div>
               </div>
+              {/* The score meaning unfolds only from tapping the word name — not
+                  from opening the Scientist's value editor, which shares the same
+                  scoreMeaning text and read as an unwanted extra hint. */}
               {explain === tx.id && tx.value !== null && (
                 <div className="tx-explain small muted">{scoreMeaning(tx.value, t)}</div>
-              )}
-              {isScientist && editing === tx.id && parseValue(draft) !== null && (
-                <div className="tx-explain small muted">{scoreMeaning(parseValue(draft)!, t)}</div>
               )}
             </li>
           );

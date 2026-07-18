@@ -742,6 +742,19 @@ textarea.notes.tall {
   cursor: default;
 }
 
+.term-clear {
+  display: flex;
+  justify-content: center;
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid #ffffff14;
+}
+
+.term-clear .link:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
 /* Transmissions */
 .tx-form {
   display: grid;
@@ -1466,6 +1479,11 @@ textarea.notes.tall {
 /* Credits popup */
 .credits-modal {
   max-width: 480px;
+  /* Bound to the viewport (minus the backdrop's 16px padding each side) so a
+     long list never spills off-screen with the Close button out of reach on a
+     small phone. dvh, not %, since a % max-height resolves against the grid
+     track — which grows to content — and never actually clamps. */
+  max-height: calc(100dvh - 32px);
   text-align: left;
 }
 
@@ -1480,6 +1498,10 @@ textarea.notes.tall {
   white-space: pre-wrap;
   color: var(--muted);
   margin: 0;
+  /* Scroll the credits text itself; the title and Close button stay pinned. */
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
 }
 
 hr {

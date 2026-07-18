@@ -10,6 +10,7 @@ import {
 } from '../../engine';
 import {
   CATEGORIES,
+  emptyTerminal,
   TERMINAL_SORTS,
   type Category,
   type Mark,
@@ -151,6 +152,17 @@ export function TerminalScreen({ game }: { game: GameApi }) {
       hiddenLetters: Array.from(new Set([...s.hiddenLetters, ...junkLetters])),
     }));
   const showAllJunk = () => update((s) => ({ ...s, hiddenLetters: [] }));
+
+  // Wipe every terminal mark + fold state. Lives here (was in Setup) so it sits
+  // by the grid it clears; disabled when there is nothing to clear.
+  const terminalDirty =
+    state.hiddenLetters.length > 0 ||
+    CATEGORIES.some((c) => Object.values(state.terminal[c]).some((m) => m.struck || m.confirmed));
+  const clearTerminal = () => {
+    if (confirm(t('terminal.clearMarksConfirm'))) {
+      update((s) => ({ ...s, terminal: emptyTerminal(), hiddenLetters: [] }));
+    }
+  };
 
   // Keep hidden ⊆ junk: a letter that stops being junk (its marks changed) drops
   // out of the hidden set, so it reappears and — crucially — never re-hides
@@ -389,6 +401,12 @@ export function TerminalScreen({ game }: { game: GameApi }) {
           </button>
         </div>
       )}
+
+      <div className="term-clear">
+        <button type="button" className="link danger" disabled={!terminalDirty} onClick={clearTerminal}>
+          {t('terminal.clearMarks')}
+        </button>
+      </div>
     </section>
   );
 }

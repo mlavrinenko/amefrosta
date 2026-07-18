@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useI18n } from '../i18n';
 import { PACKS, PACK_CODES, type PackCode } from '../packs';
-import { defaultState, emptyTerminal, SIDES } from '../state/state';
+import { CATEGORIES, defaultState, SIDES } from '../state/state';
 import type { GameApi } from '../state/useGame';
 import { Sheet } from './Sheet';
 import { Icon } from './icons/Icon';
@@ -14,6 +14,22 @@ export function SettingsSheet({ game, onClose }: { game: GameApi; onClose: () =>
   const [showCredits, setShowCredits] = useState(false);
   const setPref = (patch: Partial<typeof state.prefs>) =>
     update((s) => ({ ...s, prefs: { ...s.prefs, ...patch } }));
+
+  // Reset is a no-op on a pristine game, so gate it: a disabled button both
+  // avoids a pointless confirm and, right after a reset, flips to disabled —
+  // the feedback that the wipe took. Any player-entered content counts.
+  const hasMarks = CATEGORIES.some((c) =>
+    Object.values(state.terminal[c]).some((m) => m.struck || m.confirmed),
+  );
+  const dirty =
+    state.transmissions.length > 0 ||
+    state.cipher !== null ||
+    state.cipherArchive.length > 0 ||
+    state.hiddenLetters.length > 0 ||
+    state.notes.trim().length > 0 ||
+    state.message.dice !== null ||
+    state.message.words.some((w) => w.trim().length > 0) ||
+    hasMarks;
 
   return (
     <Sheet title={t('nav.setup')} onClose={onClose}>
@@ -68,18 +84,8 @@ export function SettingsSheet({ game, onClose }: { game: GameApi; onClose: () =>
 
         <button
           type="button"
-          onClick={() => {
-            if (confirm(t('setup.clearTerminalConfirm'))) {
-              update((s) => ({ ...s, terminal: emptyTerminal(), hiddenLetters: [] }));
-            }
-          }}
-        >
-          {t('setup.clearTerminal')}
-        </button>
-
-        <button
-          type="button"
           className="danger"
+          disabled={!dirty}
           onClick={() => {
             if (confirm(t('setup.resetConfirm'))) {
               update((s) => ({ ...defaultState(), lang: s.lang, side: s.side }));
