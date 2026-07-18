@@ -244,6 +244,11 @@ button.danger {
   color: var(--danger);
 }
 
+button.danger:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+ 
 button.link {
   background: none;
   border: none;
@@ -673,9 +678,6 @@ textarea.notes.tall {
   display: flex;
   flex-direction: column;
   gap: 2px;
-}
-
-.hint-text {
 }
 
 .hint-why {
